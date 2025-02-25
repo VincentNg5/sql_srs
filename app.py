@@ -5,11 +5,12 @@ import io
 
 st.title("SQL spaced repetition")
 
-option = st.selectbox(
-    "What would you like to review ?", 
-    ["Group By", "Window functions"], 
-    index=None
-)
+with st.sidebar:
+    option = st.selectbox(
+        "What would you like to review ?", 
+        ["Joins", "Group By", "Window functions"], 
+        index=None
+    )
 
 csv = '''
 beverage,price
