@@ -12,21 +12,21 @@ with st.sidebar:
         index=None
     )
 
-csv = '''
+csv = """
 beverage,price
 orange juice,2.5
 Expresso,2
 Tea,3
-'''
+"""
 
 beverages = pd.read_csv(io.StringIO(csv))
 
-csv2 = '''
+csv2 = """
 food_item,food_price
 cookie juice,2.5
 chocolatine,2
 muffin,3
-'''
+"""
 
 food_items = pd.read_csv(io.StringIO(csv2))
 
@@ -42,6 +42,20 @@ if sql_query:
     result = duckdb.query(sql_query).df()
     st.dataframe(result)
 
+    if len(result.columns) != len(solution.columns):
+        st.write("Some columns are missing")
+
+    try:
+        result = result[solution.columns]
+        st.dataframe(result.compare(solution))
+    except KeyError as e:
+        st.write("Some columns are missing")
+
+    n_lines_difference = len(result) - len(solution)
+    if n_lines_difference != 0:
+        st.write(f"Number of lines is different by {n_lines_difference}")
+
+
 tables, solutions = st.tabs(["Tables", "Solutions"])
 with tables:
     st.write("Beverages")
@@ -53,7 +67,3 @@ with tables:
 
 with solutions:
     st.write(answer)
-
-
-
-
