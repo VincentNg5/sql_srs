@@ -7,9 +7,9 @@ st.title("SQL spaced repetition")
 
 with st.sidebar:
     option = st.selectbox(
-        "What would you like to review ?", 
-        ["Joins", "Group By", "Window functions"], 
-        index=None
+        "What would you like to review ?",
+        ["Joins", "Group By", "Window functions"],
+        index=None,
     )
 
 csv = """
