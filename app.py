@@ -35,7 +35,16 @@ if sql_query:
     solution_fname = f"answers/{exercise_name}.sql"
     with open(solution_fname, "r") as f:
         solution = f.read()
-    
+
+    solution_df = con.execute(solution).df()
+
+    if len(result_df.columns) != len(solution_df.columns):
+        st.write("Some columns are missing")
+    exercise_name = exercise_df.loc[0, "exercise_name"]
+    solution_fname = f"answers/{exercise_name}.sql"
+    with open(solution_fname, "r") as f:
+        solution = f.read()
+
     solution_df = con.execute(solution).df()
 
     if len(result_df.columns) != len(solution_df.columns):
@@ -50,7 +59,7 @@ if sql_query:
     n_lines_difference = len(result_df) - len(solution_df)
     if n_lines_difference != 0:
         st.write(f"Number of lines is different by {n_lines_difference}")
-    
+
 
 tab_tables, tab_solution = st.tabs(["Tables", "Solution"])
 with tab_tables:
@@ -62,4 +71,3 @@ with tab_tables:
 
 with tab_solution:
     st.write(solution)
-    
