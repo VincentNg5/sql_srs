@@ -51,3 +51,10 @@ with tab_tables:
         st.write(f"table: {table}")
         df_table = con.execute(f"SELECT * FROM {table}").df()
         st.dataframe(df_table)
+
+with tab_solution:
+    exercise_name = exercise_df.loc[0, "exercise_name"]
+    solution_fname = f"answers/{exercise_name}.sql"
+    with open(solution_fname, "r") as f:
+        solution = f.read()
+    st.write(solution)
