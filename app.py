@@ -44,7 +44,7 @@ if sql_query:
     solution_fname = f"answers/{exercise_name}.sql"
     with open(solution_fname, "r") as f:
         solution = f.read()
-    
+
     solution_df = con.execute(solution).df()
 
     if len(result_df.columns) != len(solution_df.columns):
