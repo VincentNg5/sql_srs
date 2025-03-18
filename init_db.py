@@ -2,7 +2,7 @@ import io
 import pandas as pd
 import duckdb
 
-con = duckdb.connect(database="data/exercices_sql_tables.duckdb", read_only=False)
+con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
 
 # -------------------
@@ -14,8 +14,8 @@ data = {
     "tables": [["beverages", "food_items"]],
     "last_reviewed": ["1970-01-01"]
 }
-memory_state_df = pd.DataFrame(data)
-con.execute("CREATE TABLE IF NOT EXISTS memory_state_df AS SELECT * FROM memory_state_df")
+memory_state = pd.DataFrame(data)
+con.execute("CREATE TABLE IF NOT EXISTS memory_state AS SELECT * FROM memory_state")
 
 
 # -------------------
