@@ -40,6 +40,15 @@ if sql_query:
 
     if len(result_df.columns) != len(solution_df.columns):
         st.write("Some columns are missing")
+    exercise_name = exercise_df.loc[0, "exercise_name"]
+    solution_fname = f"answers/{exercise_name}.sql"
+    with open(solution_fname, "r") as f:
+        solution = f.read()
+    
+    solution_df = con.execute(solution).df()
+
+    if len(result_df.columns) != len(solution_df.columns):
+        st.write("Some columns are missing")
 
     try:
         result_df = result_df[solution_df.columns]
