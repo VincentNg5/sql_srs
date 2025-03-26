@@ -15,7 +15,7 @@ with st.sidebar:
     st.write("You selected:", theme)
 
 exercise = con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}'")
-exercise_df = exercise.df()
+exercise_df = exercise.df().sort_values("last_reviewed").reset_index(drop=True)
 st.write(exercise_df)
 
 answer = """
@@ -39,21 +39,6 @@ if sql_query:
     solution_df = con.execute(solution).df()
 
     if len(result_df.columns) != len(solution_df.columns):
-        st.write("Some columns are missing")
-    exercise_name = exercise_df.loc[0, "exercise_name"]
-    solution_fname = f"answers/{exercise_name}.sql"
-    with open(solution_fname, "r") as f:
-        solution = f.read()
-
-    solution_df = con.execute(solution).df()
-
-    if len(result_df.columns) != len(solution_df.columns):
-        st.write("Some columns are missing")
-
-    try:
-        result_df = result_df[solution_df.columns]
-        df_comparison = result_df.compare(solution_df)
-    except KeyError as e:
         st.write("Some columns are missing")
 
     n_lines_difference = len(result_df) - len(solution_df)
