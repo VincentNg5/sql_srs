@@ -3,6 +3,7 @@ import logging
 import streamlit as st
 import pandas as pd
 import duckdb
+from datetime import date
 
 if "data" not in os.listdir():
     print("Creating folder data...")
@@ -13,19 +14,25 @@ if "data" not in os.listdir():
 if "exercises_sql_tables.duckdb" not in os.listdir("data"):
     exec(open("init_db.py").read())
 
-con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=True)
+con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
 st.title("SQL spaced repetition")
 
 with st.sidebar:
+    available_themes_df = con.execute("SELECT DISTINCT theme FROM memory_state").df()
+    available_themes = available_themes_df["theme"].unique()
+
     theme = st.selectbox(
         "What would you like to review ?",
-        ["cross_joins", "Group By", "Window functions"],
+        options=available_themes,
         index=None,
     )
     st.write("You selected:", theme)
 
-exercise = con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}'")
+if theme:
+    exercise = con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}'")
+else:
+    exercise = con.execute("SELECT * FROM memory_state")
 exercise_df = exercise.df().sort_values("last_reviewed").reset_index(drop=True)
 st.write(exercise_df)
 
@@ -56,6 +63,20 @@ if sql_query:
     if n_lines_difference != 0:
         st.write(f"Number of lines is different by {n_lines_difference}")
 
+for n_days in [2, 7, 30]:
+    if st.button(f"Revoir dans {n_days} jours"):
+        next_review = date.today() + pd.Timedelta(days=n_days)
+        spaced_repetition_query = f"""
+            UPDATE memory_state
+            SET last_reviewed = '{next_review}'
+            WHERE exercise_name = '{exercise_name}'
+        """
+        con.execute(spaced_repetition_query)
+        st.rerun()
+
+if st.button("Reset"):
+    con.execute(f"UPDATE memory_state SET last_reviewed = '1970-01-01'")
+    st.rerun()
 
 tab_tables, tab_solution = st.tabs(["Tables", "Solution"])
 with tab_tables:
@@ -66,4 +87,7 @@ with tab_tables:
         st.dataframe(table_df)
 
 with tab_solution:
-    st.write(solution)
+    try:
+        st.write(solution)
+    except NameError:
+        st.write("No solution available for this exercise.")
